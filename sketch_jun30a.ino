@@ -64,7 +64,7 @@ void TaskBluetooth(void *pvParameters) {
       byte b1 = dadoB1;
       byte b2 = dadoB2;
 
-      bleGamepad.setX(x);
+      bleGamepad.setRX(x);
 
       // Mapeamento dos botões
       if (!(b1 & (1 << 3))) bleGamepad.press(BUTTON_1);  else bleGamepad.release(BUTTON_1);  // START
@@ -127,11 +127,11 @@ void loop() {
   int16_t eixoX = 0;
 
   if (valorVolante >= CENTRO_MIN && valorVolante <= CENTRO_MAX) {
-    eixoX = 0; 
+    eixoX = 16383; 
   } else if (valorVolante < CENTRO_MIN) {
-    eixoX = map(valorVolante, 0, CENTRO_MIN, -32767, 0);
+    eixoX = map(valorVolante, 1370, CENTRO_MIN, 0, 16383);
   } else {
-    eixoX = map(valorVolante, CENTRO_MAX, 4095, 0, 32767);
+    eixoX = map(valorVolante, CENTRO_MAX, 3367, 16383, 32767);
   }
 
   // 2. Leitura rápida do Aro via SPI (21 Bytes)
@@ -184,7 +184,7 @@ void loop() {
     // --- MONITOR SERIAL CORRIGIDO: Printa absolutamente TODOS os botões agora ---
     if (b1 != b1_antigo || b2 != b2_antigo || modoAtual != modo_antigo || abs(eixoX - eixoX_antigo) > 150) {
       Serial.print("Modo: 0x"); Serial.print(modoAtual, HEX);
-      Serial.print(" | Eixo X: "); Serial.print(eixoX);
+      Serial.print(" | Eixo X: "); Serial.print(eixoX); Serial.print(" | Valor Volante: "); Serial.print(valorVolante);
       Serial.print(" | Botões: ");
       
       // Byte 1
